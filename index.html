@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3443/3443429.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pachengue </title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --card-bg: #121212;
+            --green: #39FF14; 
+            --red: #FF3131;   
+            --blue: #00FFFF;  
+            --purple: #BC13FE; 
+            --orange: #FFAC1C; 
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin: 20px 0 30px 0;
+            font-size: 28px;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(to bottom, #ffffff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .resumen {
+            background-color: var(--card-bg);
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05); 
+        }
+
+        .currency-green {
+            color: var(--green);
+            text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+        }
+
+        .config-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .btn-secundario {
+            background-color: #000; 
+            border: 2px solid;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s ease; 
+        }
+
+        .btn-secundario:active, .btn-venta:active {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            transform: scale(0.96);
+            filter: brightness(1.5);
+        }
+
+        .btn-secundario:hover { transform: scale(1.03); }
+
+        .btn-add-product { border-color: var(--purple); color: var(--purple); grid-column: span 2; box-shadow: 0 4px 15px -5px var(--purple); }
+        .btn-config { border-color: var(--blue); color: var(--blue); box-shadow: 0 4px 15px -5px var(--blue); }
+        .btn-descargar { border-color: var(--orange); color: var(--orange); box-shadow: 0 4px 15px -5px var(--orange); }
+        .btn-reiniciar { border-color: var(--red); color: var(--red); grid-column: span 2; box-shadow: 0 4px 15px -5px var(--red); }
+        .btn-deshacer { border-color: var(--red); color: var(--red); grid-column: span 2; box-shadow: 0 4px 15px -5px var(--red); }
+
+        .btn-venta {
+            background-color: #000; 
+            color: var(--green); 
+            border: 2px solid var(--green);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px -5px var(--green); 
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-venta:hover { transform: scale(1.02); box-shadow: 0 6px 20px -4px var(--green); }
+
+        .historial {
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .registro {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 0;
+            font-size: 14px;
+        }
+
+        .reg-precio { text-align: center; font-weight: bold; }
+        .reg-hora { text-align: right; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <h1>Registro de Ventas</h1>
+
+    <div class="resumen">
+        TOTAL: <span class="currency-green">$</span><span id="totalVentas" class="currency-green">0</span>
+    </div>
+
+    <div class="config-bar">
+        <button class="btn-secundario btn-add-product" onclick="agregarNuevoTipoProducto()">+ Nuevo Producto</button>
+        <button class="btn-secundario btn-config" onclick="configurarPrecios()">Precios</button>
+        <button class="btn-secundario btn-descargar" onclick="descargarHistorial()">Exportar</button>
+        <button class="btn-secundario btn-reiniciar" onclick="reiniciarCaja()">Reiniciar Todo</button>
+        <button class="btn-secundario btn-deshacer" onclick="eliminarUltimaVenta()">Deshacer última venta</button>
+    </div>
+
+    <div id="contenedorBotones"></div>
+
+    <div class="historial" id="listaHistorial"></div>
+
+    <script>
+        let productos = JSON.parse(localStorage.getItem('productosPanchos')) || [
+            { nombre: "Pancho Solo", precio: 1500 },
+            { nombre: "Pancho con Coca &nbsp", precio: 2500 }
+        ];
+
+        let ventas = JSON.parse(localStorage.getItem('ventasPanchos')) || [];
+
+        function actualizarPantalla() {
+            const contenedor = document.getElementById('contenedorBotones');
+            contenedor.innerHTML = "";
+            productos.forEach((prod) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-venta';
+                btn.innerHTML = `<span>${prod.nombre}</span> <span> $ ${prod.precio}</span>`;
+                btn.onclick = () => registrarVenta(prod.nombre, prod.precio);
+                contenedor.appendChild(btn);
+            });
+
+            let total = ventas.reduce((suma, v) => suma + v.precio, 0);
+            document.getElementById('totalVentas').innerText = total;
+
+            const lista = document.getElementById('listaHistorial');
+            lista.innerHTML = "";
+            [...ventas].reverse().forEach(v => {
+                lista.innerHTML += `
+                    <div class="registro">
+                        <span>${v.tipo}</span>
+                        <span class="reg-precio">$ ${v.precio}</span>
+                        <span class="reg-hora">${v.hora}</span>
+                    </div>`;
+            });
+        }
+
+        function registrarVenta(tipo, precio) {
+            let ahora = new Date();
+            ventas.push({ 
+                tipo, 
+                precio, 
+                hora: ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), 
+                fecha: ahora.toLocaleDateString() 
+            });
+            localStorage.setItem('ventasPanchos', JSON.stringify(ventas));
+            actualizarPantalla();
+        }
+
+        function agregarNuevoTipoProducto() {
+            let nombre = prompt("Nombre del producto:");
+            if (!nombre) return;
+            let precio = prompt("Precio:");
+            if (!precio || isNaN(precio)) return;
+            productos.push({ nombre: nombre, precio: parseFloat(precio) });
+            localStorage.setItem('productosPanchos', JSON.stringify(productos));
+            actualizarPantalla();
+        }
+
+        function configurarPrecios() {
+            let opciones = productos.map((p, i) => `${i+1}. ${p.nombre} ($${p.precio})`).join("\n");
+            let eleccion = prompt("Elegir número para cambiar precio:\n" + opciones);
+            let index = parseInt(eleccion) - 1;
+            if (productos[index]) {
+                let nuevo = prompt("Nuevo precio:");
+                if (nuevo && !isNaN(nuevo)) {
+                    productos[index].precio = parseFloat(nuevo);
+                    localStorage.setItem('productosPanchos', JSON.stringify(productos));
+                    actualizarPantalla();
+                }
+            }
+        }
+
+        function eliminarUltimaVenta() {
+            if (ventas.length > 0 && confirm("¿Eliminar la última venta registrada?")) {
+                ventas.pop();
+                localStorage.setItem('ventasPanchos', JSON.stringify(ventas));
+                actualizarPantalla();
+            }
+        }
+
+        function reiniciarCaja() {
+            if (confirm("¿Borrar TODO? Se eliminarán ventas y productos nuevos.")) {
+                ventas = [];
+                productos = [
+                    { nombre: "Pancho Solo", precio: 1500 },
+                    { nombre: "Pancho con Coca", precio: 2500 }
+                ];
+                localStorage.setItem('ventasPanchos', JSON.stringify(ventas));
+                localStorage.setItem('productosPanchos', JSON.stringify(productos));
+                actualizarPantalla();
+            }
+        }
+
+        // --- FUNCIÓN DE EXPORTACIÓN MEJORADA ---
+        function descargarHistorial() {
+            if(ventas.length === 0) {
+                alert("No hay ventas para exportar.");
+                return;
+            }
+            
+            let totalAcumulado = ventas.reduce((suma, v) => suma + v.precio, 0);
+            
+            // Encabezados con punto y coma para mejor compatibilidad con Excel
+            let csv = "\uFEFFFECHA;HORA;PRODUCTO;PRECIO\n";
+            
+            // Cuerpo del reporte
+            ventas.forEach(v => {
+                csv += `${v.fecha};${v.hora};${v.tipo};${v.precio}\n`;
+            });
+            
+            // Fila de separación y Total al final
+            csv += "\n;;TOTAL ACUMULADO:;" + totalAcumulado;
+
+            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            
+            // Nombre del archivo con la fecha actual
+            let fechaHoy = new Date().toLocaleDateString().replace(/\//g, '-');
+            a.href = url;
+            a.download = `Reporte_Ventas_${fechaHoy}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        actualizarPantalla();
+    </script>
+</body>
+</html>
